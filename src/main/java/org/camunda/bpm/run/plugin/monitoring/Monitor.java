@@ -6,6 +6,8 @@ import io.micrometer.core.instrument.MultiGauge.Row;
 import io.micrometer.core.instrument.Tags;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 
@@ -40,10 +42,9 @@ public abstract class Monitor {
     public void update() {
         Collection<MultiGaugeData> gaugesData = retrieveGaugesData();
 
-        multiGaugeMap.entrySet().stream()
-                .forEach(gaugeEntry -> gaugeEntry.getValue().register(
-                        gaugesData.stream().map(d -> getRow(gaugeEntry.getKey(), d)).collect(Collectors.toList()),
-                        true));
+        multiGaugeMap.forEach((key, value) -> value.register(
+                gaugesData.stream().map(d -> getRow(key, d)).collect(Collectors.toList()),
+                true));
     }
 
     private Row<MultiGaugeData> getRow(String gaugeName, MultiGaugeData d) {

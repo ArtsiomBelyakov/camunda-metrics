@@ -54,21 +54,4 @@ public class EndpointRunner implements ApplicationListener<ApplicationReadyEvent
             executorService.shutdown();
         }
     }
-
-//
-//
-//    @EventListener(ApplicationReadyEvent.class)
-//    public void runAfterStartup() throws IOException, InterruptedException, URISyntaxException {
-//        String host = InetAddress.getLocalHost().getHostAddress();
-//        int port = applicationContext.getBean(Environment.class).getProperty("server.port", Integer.class, 8080);
-//
-//        uri = new URI("http://localhost:8080/engine-rest/incident/count");
-//        HttpRequest request = HttpRequest.newBuilder()
-////                .uri(uri)
-//                .uri(URI.create("/engine-rest/incident/count"))
-//                .build();
-//
-//        HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-//        System.out.println("Yaaah, I am running........");
-//    }
 }
