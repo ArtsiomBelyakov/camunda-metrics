@@ -1,0 +1,30 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, metrics, httpexchanges
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+spring:
+  servlet.load-on-startup: 1
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://host.docker.internal:5432/process_engine
+    username: postgres
+    password: admin
+    hikari:
+      maximum-pool-size: 20
+
+camunda:
+  bpm:
+    metrics:
+      enabled: true
+    history-level: none
+
+logging:
+  level:
+    root: INFO
