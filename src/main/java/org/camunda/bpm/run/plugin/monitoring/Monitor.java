@@ -21,17 +21,20 @@ import java.util.stream.Collectors;
 @Getter
 public abstract class Monitor {
 
-    private ProcessEngine processEngine;
-    private MeterRegistry meterRegistry;
+    private final ProcessEngine processEngine;
+    private final MeterRegistry meterRegistry;
+    private final Map<String, MultiGauge> multiGaugeMap = new HashMap<>();
 
-    Map<String, MultiGauge> multiGaugeMap = new HashMap<>();
 
     public Monitor(ProcessEngine processEngine, MeterRegistry meterRegistry) {
         this.processEngine = processEngine;
         this.meterRegistry = meterRegistry;
-        multiGaugeMap = getGaugeNames().stream().distinct().collect(Collectors.toMap(Function.identity(),
-                gaugeName -> MultiGauge.builder(gaugeName).register(meterRegistry)));
+        initMultiGauges();
+    }
 
+    private void initMultiGauges() {
+        getGaugeNames().forEach(gaugeName ->
+                multiGaugeMap.put(gaugeName, MultiGauge.builder(gaugeName).register(meterRegistry)));
         update();
     }
 
@@ -40,11 +43,21 @@ public abstract class Monitor {
     protected abstract Collection<MultiGaugeData> retrieveGaugesData();
 
     public void update() {
+//        Collection<MultiGaugeData> gaugesData = retrieveGaugesData();
+//
+//        multiGaugeMap.forEach((key, value) -> value.register(
+//                gaugesData.stream().map(d -> getRow(key, d)).collect(Collectors.toList()),
+//                true));
         Collection<MultiGaugeData> gaugesData = retrieveGaugesData();
 
-        multiGaugeMap.forEach((key, value) -> value.register(
-                gaugesData.stream().map(d -> getRow(key, d)).collect(Collectors.toList()),
-                true));
+        multiGaugeMap.forEach((key, value) -> {
+            Iterable<Row<?>> rows = gaugesData.stream()
+                    .map(d -> getRow(key, d))
+                    .collect(Collectors.toList()); // Здесь возвращаем коллекцию
+
+            value.register(rows, true); // Теперь это будет Iterable
+        });
+
     }
 
     private Row<MultiGaugeData> getRow(String gaugeName, MultiGaugeData d) {

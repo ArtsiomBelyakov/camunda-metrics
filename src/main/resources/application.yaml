@@ -1,4 +1,5 @@
 #for test locally
+
 management:
   endpoints:
     web:
@@ -20,10 +21,11 @@ management:
       percentiles:
         http.server.requests: 0.5, 0.9, 0.95, 0.99
 
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://host.docker.internal:5432/process_engine
+    url: jdbc:postgresql://localhost:5432/process_engine
     username: postgres
     password: admin
 
@@ -31,6 +33,3 @@ camunda:
   bpm:
     history-level: none
 
-logging:
-  level:
-    root: INFO

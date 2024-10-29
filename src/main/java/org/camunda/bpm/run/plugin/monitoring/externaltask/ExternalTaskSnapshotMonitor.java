@@ -18,8 +18,10 @@ public class ExternalTaskSnapshotMonitor extends Monitor {
 
     @Override
     protected List<String> getGaugeNames() {
-        return Arrays.asList(Meters.EXTERNAL_TASKS_OPEN, Meters.EXTERNAL_TASKS_OPEN_ERROR).stream()
-                .map(Meters::getMeterName).collect(Collectors.toList());
+        return Arrays.stream(Meters.values())
+                .filter(meter -> meter.name().startsWith("EXTERNAL_TASKS"))
+                .map(Meters::getMeterName)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -31,23 +33,18 @@ public class ExternalTaskSnapshotMonitor extends Monitor {
         for (ExternalTask task : tasks) {
             Tags tags = ExternalTaskMeterTags.createTags(task.getTenantId(), task.getProcessDefinitionId(),
                     task.getProcessDefinitionKey(), task.getActivityId(), task.getTopicName());
-            MultiGaugeData data = map.get(tags);
 
-            if (data == null) {
+            MultiGaugeData data = map.computeIfAbsent(tags, key -> {
                 Map<String, Long> gaugeValues = new HashMap<>();
                 gaugeValues.put(Meters.EXTERNAL_TASKS_OPEN.getMeterName(), 0L);
                 gaugeValues.put(Meters.EXTERNAL_TASKS_OPEN_ERROR.getMeterName(), 0L);
-
-                data = new MultiGaugeData(gaugeValues, getTagsForProcessDefinition(task.getProcessDefinitionId()));
-            }
+                return new MultiGaugeData(gaugeValues, key);
+            });
 
             data.getGaugesValues().merge(Meters.EXTERNAL_TASKS_OPEN.getMeterName(), 1L, Long::sum);
             if (task.getErrorMessage() != null) {
                 data.getGaugesValues().merge(Meters.EXTERNAL_TASKS_OPEN_ERROR.getMeterName(), 1L, Long::sum);
             }
-
-            map.put(tags, data);
-
         }
 
         return map.values();

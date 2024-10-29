@@ -17,19 +17,19 @@ public class MonitorHistoryListener {
 
     private TaggedCounter processInstancesStartedCounter;
     private TaggedCounter processInstancesEndedCounter;
-
-    @Autowired
-    ProcessEngine processEngine;
     private TaggedCounter incidentsCreatedCounter;
     private TaggedCounter incidentsResolvedCounter;
     private TaggedCounter incidentsDeletedCounter;
 
+//
+//    @Autowired
+//    ProcessEngine processEngine;
+
+
     @Autowired
     public MonitorHistoryListener(MeterRegistry meterRegistry) {
-        processInstancesStartedCounter = new TaggedCounter(Meters.PROCESS_INSTANCES_STARTED.getMeterName(),
-                meterRegistry);
+        processInstancesStartedCounter = new TaggedCounter(Meters.PROCESS_INSTANCES_STARTED.getMeterName(), meterRegistry);
         processInstancesEndedCounter = new TaggedCounter(Meters.PROCESS_INSTANCES_ENDED.getMeterName(), meterRegistry);
-
         incidentsCreatedCounter = new TaggedCounter(Meters.INCIDENTS_CREATED.getMeterName(), meterRegistry);
         incidentsResolvedCounter = new TaggedCounter(Meters.INCIDENTS_RESOLVED.getMeterName(), meterRegistry);
         incidentsDeletedCounter = new TaggedCounter(Meters.INCIDENTS_DELETED.getMeterName(), meterRegistry);
@@ -37,11 +37,12 @@ public class MonitorHistoryListener {
 
     @EventListener
     public void onHistoricProcessInstanceEvent(HistoricProcessInstanceEventEntity historyEvent) {
+        Tags tags = createProcessInstanceTags(historyEvent);
 
         if (historyEvent.isEventOfType(HistoryEventTypes.PROCESS_INSTANCE_START)) {
-            processInstancesStartedCounter.increment(createProcessInstanceTags(historyEvent));
+            processInstancesStartedCounter.increment(tags);
         } else if (historyEvent.isEventOfType(HistoryEventTypes.PROCESS_INSTANCE_END)) {
-            processInstancesEndedCounter.increment(createProcessInstanceTags(historyEvent));
+            processInstancesEndedCounter.increment(tags);
         }
     }
 
@@ -56,13 +57,14 @@ public class MonitorHistoryListener {
 
     @EventListener
     public void onHistoricIncidentEvent(HistoricIncidentEventEntity historyEvent) {
+        Tags tags = createIncidentTags(historyEvent);
 
         if (historyEvent.isEventOfType(HistoryEventTypes.INCIDENT_CREATE)) {
-            incidentsCreatedCounter.increment(createIncidentTags(historyEvent));
+            incidentsCreatedCounter.increment(tags);
         } else if (historyEvent.isEventOfType(HistoryEventTypes.INCIDENT_DELETE)) {
-            incidentsDeletedCounter.increment(createIncidentTags(historyEvent));
+            incidentsDeletedCounter.increment(tags);
         } else if (historyEvent.isEventOfType(HistoryEventTypes.INCIDENT_RESOLVE)) {
-            incidentsResolvedCounter.increment(createIncidentTags(historyEvent));
+            incidentsResolvedCounter.increment(tags);
         }
     }
 
@@ -71,5 +73,4 @@ public class MonitorHistoryListener {
                 historyEvent.getProcessDefinitionKey(), historyEvent.getActivityId(),
                 historyEvent.getFailedActivityId(), historyEvent.getIncidentType());
     }
-
 }

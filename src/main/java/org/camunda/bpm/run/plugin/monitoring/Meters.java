@@ -1,19 +1,11 @@
 package org.camunda.bpm.run.plugin.monitoring;
 
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import lombok.Getter;
 
 /**
  * Meters to expose
  */
+@Getter
 public enum Meters {
 
     PROCESS_INSTANCES_STARTED("camunda.process.instances.started"),
@@ -41,13 +33,10 @@ public enum Meters {
 //    COMPENSATE_EVENT_SUBSCRIPTIONS_ACTIVE("camunda.compensate.event.subscriptions.active"),
 //    CONDITIONAL_EVENT_SUBSCRIPTIONS_ACTIVE("camunda.conditional.event.subscriptions.active");
 
-    private Meters(String meterName) {
+    Meters(String meterName) {
         this.meterName = meterName;
     }
 
-    protected String meterName;
+    private final String meterName;
 
-    public String getMeterName() {
-        return meterName;
-    }
 }
