@@ -9,7 +9,6 @@ import org.camunda.bpm.run.plugin.monitoring.Meters;
 import org.camunda.bpm.run.plugin.monitoring.Monitor;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ProcessInstanceSnapshotMonitor extends Monitor {
 

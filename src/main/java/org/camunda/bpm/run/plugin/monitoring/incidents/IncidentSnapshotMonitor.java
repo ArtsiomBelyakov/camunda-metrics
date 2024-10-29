@@ -3,6 +3,7 @@ package org.camunda.bpm.run.plugin.monitoring.incidents;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.externaltask.ExternalTask;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.Incident;
 import org.camunda.bpm.run.plugin.monitoring.Meters;
@@ -41,9 +42,27 @@ public class IncidentSnapshotMonitor extends Monitor {
                 gaugeValues.put(Meters.INCIDENTS_OPEN.getMeterName(), 0L);
 
                 ProcessDefinition processDefinition = getProcessDefinition(incident.getProcessDefinitionId());
-                Tags tags = IncidentMeterTags.createTags(processDefinition.getTenantId(), processDefinition.getId(),
-                        processDefinition.getKey(), incident.getActivityId(), incident.getFailedActivityId(),
+
+
+                // Получаем имя топика внешней задачи, если это инцидент, связанный с внешней задачей
+                String topicName = Optional.ofNullable(getProcessEngine().getExternalTaskService()
+                                .createExternalTaskQuery()
+                                .executionId(incident.getExecutionId())
+                                .singleResult())
+                        .map(ExternalTask::getTopicName)
+                        .orElse(null);
+
+                Tags tags = IncidentMeterTags.createTags(processDefinition.getTenantId(),
+                        processDefinition.getId(),
+                        processDefinition.getKey(),
+                        incident.getActivityId(),
+                        incident.getFailedActivityId(),
                         incident.getIncidentType());
+
+
+                if (topicName != null) {
+                    tags = tags.and("topic.name", topicName); // Добавляем тег для topicName
+                }
 
                 return new MultiGaugeData(gaugeValues, tags);
             });
@@ -58,5 +77,4 @@ public class IncidentSnapshotMonitor extends Monitor {
 
         return map.values();
     }
-
 }
