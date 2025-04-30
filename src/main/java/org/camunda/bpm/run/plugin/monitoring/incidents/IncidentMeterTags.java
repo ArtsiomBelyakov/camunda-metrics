@@ -30,7 +30,7 @@ public enum IncidentMeterTags {
         tags = tags.and(IncidentMeterTags.PROCESS_DEFINITION_ID.getTagName(), processDefinitionId);
         tags = tags.and(IncidentMeterTags.PROCESS_DEFINITION_KEY.getTagName(), processDefinitionKey);
         tags = tags.and(IncidentMeterTags.ACTIVITY_ID.getTagName(), activityId);
-        if (!Objects.equals(tenantId, failedActivityId)) {
+        if (failedActivityId != null) {
             tags = tags.and(IncidentMeterTags.FAILED_ACTIVITY_ID.getTagName(), failedActivityId);
         }
         tags = tags.and(IncidentMeterTags.INCIDENT_TYPE.getTagName(), incidentType);
