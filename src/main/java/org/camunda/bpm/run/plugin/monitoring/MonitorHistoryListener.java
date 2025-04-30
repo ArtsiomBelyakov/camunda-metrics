@@ -2,6 +2,8 @@ package org.camunda.bpm.run.plugin.monitoring;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.history.event.HistoricIncidentEventEntity;
 import org.camunda.bpm.engine.impl.history.event.HistoricProcessInstanceEventEntity;
@@ -13,13 +15,14 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class MonitorHistoryListener {
 
-    private TaggedCounter processInstancesStartedCounter;
-    private TaggedCounter processInstancesEndedCounter;
-    private TaggedCounter incidentsCreatedCounter;
-    private TaggedCounter incidentsResolvedCounter;
-    private TaggedCounter incidentsDeletedCounter;
+    TaggedCounter processInstancesStartedCounter;
+    TaggedCounter processInstancesEndedCounter;
+    TaggedCounter incidentsCreatedCounter;
+    TaggedCounter incidentsResolvedCounter;
+    TaggedCounter incidentsDeletedCounter;
 
 //
 //    @Autowired

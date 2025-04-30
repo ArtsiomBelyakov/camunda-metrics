@@ -20,7 +20,7 @@ public enum IncidentMeterTags {
     private String tagName;
 
     public static Tags createTags(String tenantId, String processDefinitionId, String processDefinitionKey,
-            String activityId, String failedActivityId, String incidentType) {
+                                  String activityId, String failedActivityId, String incidentType) {
         Tags tags = Tags.empty();
 
         if (tenantId != null) {

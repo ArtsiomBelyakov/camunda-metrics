@@ -5,7 +5,7 @@
 
     <groupId>com.magnit.oms</groupId>
     <artifactId>camunda-metrics</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -29,7 +29,6 @@
 
     <dependencies>
         <!--        for locally test from InteliJ-->
-        <!--/////////////////////////////////////////////////-->
         <dependency>
             <groupId>org.camunda.bpm.springboot</groupId>
             <artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
@@ -55,7 +54,6 @@
             <artifactId>postgresql</artifactId>
             <version>42.7.4</version>
         </dependency>
-        <!--/////////////////////////////////////////////////-->
 
         <dependency>
             <groupId>io.micrometer</groupId>
