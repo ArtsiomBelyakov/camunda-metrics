@@ -17,7 +17,7 @@ public enum ProcessInstanceMeterTags {
     public static Tags createTags(String tenantId, String processDefinitionId, String processDefinitionKey) {
         Tags tags = Tags.empty();
         if (tenantId != null) {
-            tags.and(TENANT_ID.getTagName(), tenantId);
+            tags = tags.and(TENANT_ID.getTagName(), tenantId);
         }
         return tags.and(PROCESS_DEFINITION_ID.getTagName(), processDefinitionId).and(
                 PROCESS_DEFINITION_KEY.getTagName(),

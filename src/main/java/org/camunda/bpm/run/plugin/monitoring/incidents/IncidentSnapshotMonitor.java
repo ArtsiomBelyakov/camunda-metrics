@@ -28,7 +28,7 @@ public class IncidentSnapshotMonitor extends Monitor {
 
     @Override
     protected Collection<MultiGaugeData> retrieveGaugesData() {
-        Map<String, MultiGaugeData> map = new HashMap<>();
+        Map<Tags, MultiGaugeData> map = new HashMap<>();
         List<Incident> incidents = getProcessEngine().getRuntimeService().createIncidentQuery().unlimitedList()
                 .stream()
                 .filter(incident -> incident.getId().equals(incident.getRootCauseIncidentId())
@@ -64,9 +64,7 @@ public class IncidentSnapshotMonitor extends Monitor {
             ).and("topic.name", Objects.requireNonNullElse(topicName, ""));
 
 
-            String groupByKey = tags.toString();
-
-            MultiGaugeData data = map.computeIfAbsent(groupByKey, key -> {
+            MultiGaugeData data = map.computeIfAbsent(tags, key -> {
                 Map<String, Long> gaugeValues = new HashMap<>();
                 gaugeValues.put(Meters.INCIDENTS_OPEN_NEWEST.getMeterName(), Long.MAX_VALUE);
                 gaugeValues.put(Meters.INCIDENTS_OPEN_OLDEST.getMeterName(), Long.MIN_VALUE);

@@ -4,8 +4,6 @@ import io.micrometer.core.instrument.Tags;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Objects;
-
 @AllArgsConstructor
 public enum IncidentMeterTags {
 
