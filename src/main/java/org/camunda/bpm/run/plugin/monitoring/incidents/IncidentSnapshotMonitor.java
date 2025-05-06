@@ -47,7 +47,7 @@ public class IncidentSnapshotMonitor extends Monitor {
                     .map(ExternalTask::getTopicName)
                     .orElse(null);
 
-            // move outside or some other way to prevent duplicate tags ( if the same process definition id )
+            // moved outside to prevent duplicate tags ( if the same process definition id )
             var tenantId = incident.getTenantId();
             var processDefinitionId = processDefinition.getId();
             var processDefinitionKey = processDefinition.getKey();
