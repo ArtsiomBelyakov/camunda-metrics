@@ -4,6 +4,10 @@ import io.micrometer.core.instrument.Tags;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Objects;
+import java.util.function.Function;
+
+@Getter
 @AllArgsConstructor
 public enum IncidentMeterTags {
 
@@ -14,24 +18,19 @@ public enum IncidentMeterTags {
     FAILED_ACTIVITY_ID("failed.activity.id"),
     INCIDENT_TYPE("incident.type");
 
-    @Getter
-    private String tagName;
+    private final String tagName;
 
     public static Tags createTags(String tenantId, String processDefinitionId, String processDefinitionKey,
                                   String activityId, String failedActivityId, String incidentType) {
         Tags tags = Tags.empty();
+        Function<String, String> check = string -> Objects.requireNonNullElse(string, "");
 
-        if (tenantId != null) {
-            tags = tags.and(IncidentMeterTags.TENANT_ID.getTagName(), tenantId);
-        }
-
-        tags = tags.and(IncidentMeterTags.PROCESS_DEFINITION_ID.getTagName(), processDefinitionId);
-        tags = tags.and(IncidentMeterTags.PROCESS_DEFINITION_KEY.getTagName(), processDefinitionKey);
-        tags = tags.and(IncidentMeterTags.ACTIVITY_ID.getTagName(), activityId);
-        if (failedActivityId != null) {
-            tags = tags.and(IncidentMeterTags.FAILED_ACTIVITY_ID.getTagName(), failedActivityId);
-        }
-        tags = tags.and(IncidentMeterTags.INCIDENT_TYPE.getTagName(), incidentType);
+        tags = tags.and(IncidentMeterTags.TENANT_ID.getTagName(), check.apply(tenantId));
+        tags = tags.and(IncidentMeterTags.PROCESS_DEFINITION_ID.getTagName(), check.apply(processDefinitionId));
+        tags = tags.and(IncidentMeterTags.PROCESS_DEFINITION_KEY.getTagName(), check.apply(processDefinitionKey));
+        tags = tags.and(IncidentMeterTags.ACTIVITY_ID.getTagName(), check.apply(activityId));
+        tags = tags.and(IncidentMeterTags.FAILED_ACTIVITY_ID.getTagName(), check.apply(failedActivityId));
+        tags = tags.and(IncidentMeterTags.INCIDENT_TYPE.getTagName(), check.apply(incidentType));
 
         return tags;
 

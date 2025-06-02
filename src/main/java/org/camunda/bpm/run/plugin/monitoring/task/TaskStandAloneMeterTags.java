@@ -4,13 +4,13 @@ import io.micrometer.core.instrument.Tags;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@Getter
 @AllArgsConstructor
 public enum TaskStandAloneMeterTags {
 
     TENANT_ID("tenant.id"), TASK_NAME("task.name");
 
-    @Getter
-    private String tagName;
+    private final String tagName;
 
     public static Tags createTags(String tenantId, String taskName) {
         Tags tags = Tags.empty();

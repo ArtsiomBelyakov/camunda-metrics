@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.Tags;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@Getter
 @AllArgsConstructor
 public enum TaskCaseInstanceMeterTags {
 
@@ -11,8 +12,7 @@ public enum TaskCaseInstanceMeterTags {
     CASE_DEFINITION_ID("case.definition.id"),
     TASK_DEFINITION_KEY("task.definition.key");
 
-    @Getter
-    private String tagName;
+    private final String tagName;
 
     public static Tags createTags(String tenantId, String caseDefinitionIdString, String taskDefinitionKey) {
         Tags tags = Tags.empty();
