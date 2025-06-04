@@ -4,6 +4,8 @@ import io.micrometer.core.instrument.Tags;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import static org.camunda.bpm.run.plugin.monitoring.TagsChecker.checkNull;
+
 @Getter
 @AllArgsConstructor
 public enum TaskProcessInstanceMeterTags {
@@ -18,13 +20,10 @@ public enum TaskProcessInstanceMeterTags {
     public static Tags createTags(String tenantId, String processDefinitionId, String processDefinitionKey, String taskDefinitionKey) {
         Tags tags = Tags.empty();
 
-        if (tenantId != null) {
-            tags = tags.and(TaskProcessInstanceMeterTags.TENANT_ID.getTagName(), tenantId);
-        }
-
-        tags = tags.and(TaskProcessInstanceMeterTags.PROCESS_DEFINITION_ID.getTagName(), processDefinitionId);
-        tags = tags.and(TaskProcessInstanceMeterTags.PROCESS_DEFINITION_KEY.getTagName(), processDefinitionKey);
-        tags = tags.and(TaskProcessInstanceMeterTags.TASK_DEFINITION_KEY.getTagName(), taskDefinitionKey);
+        tags = tags.and(TaskProcessInstanceMeterTags.TENANT_ID.getTagName(), checkNull(tenantId, ""));
+        tags = tags.and(TaskProcessInstanceMeterTags.PROCESS_DEFINITION_ID.getTagName(), checkNull(processDefinitionId, ""));
+        tags = tags.and(TaskProcessInstanceMeterTags.PROCESS_DEFINITION_KEY.getTagName(), checkNull(processDefinitionKey, ""));
+        tags = tags.and(TaskProcessInstanceMeterTags.TASK_DEFINITION_KEY.getTagName(), checkNull(taskDefinitionKey, ""));
 
         return tags;
 

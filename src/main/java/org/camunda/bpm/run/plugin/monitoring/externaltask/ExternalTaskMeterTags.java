@@ -4,8 +4,7 @@ import io.micrometer.core.instrument.Tags;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Objects;
-import java.util.function.Function;
+import static org.camunda.bpm.run.plugin.monitoring.TagsChecker.checkNull;
 
 @Getter
 @AllArgsConstructor
@@ -20,14 +19,14 @@ public enum ExternalTaskMeterTags {
     private final String tagName;
 
     public static Tags createTags(String tenantId, String processDefinitionId, String processDefinitionKey,
-            String activityId, String topicName) {
+                                  String activityId, String topicName) {
         Tags tags = Tags.empty();
-        Function<String, String> check = string -> Objects.requireNonNullElse(string, "");
-        tags = tags.and(ExternalTaskMeterTags.TENANT_ID.getTagName(), check.apply(tenantId));
-        tags = tags.and(ExternalTaskMeterTags.PROCESS_DEFINITION_ID.getTagName(), check.apply(processDefinitionId));
-        tags = tags.and(ExternalTaskMeterTags.PROCESS_DEFINITION_KEY.getTagName(), check.apply(processDefinitionKey));
-        tags = tags.and(ExternalTaskMeterTags.ACTIVITY_ID.getTagName(), check.apply(activityId));
-        tags = tags.and(ExternalTaskMeterTags.TOPIC_NAME.getTagName(), check.apply(topicName));
+
+        tags = tags.and(ExternalTaskMeterTags.TENANT_ID.getTagName(), checkNull(tenantId, ""));
+        tags = tags.and(ExternalTaskMeterTags.PROCESS_DEFINITION_ID.getTagName(), checkNull(processDefinitionId, ""));
+        tags = tags.and(ExternalTaskMeterTags.PROCESS_DEFINITION_KEY.getTagName(), checkNull(processDefinitionKey, ""));
+        tags = tags.and(ExternalTaskMeterTags.ACTIVITY_ID.getTagName(), checkNull(activityId, ""));
+        tags = tags.and(ExternalTaskMeterTags.TOPIC_NAME.getTagName(), checkNull(topicName, ""));
 
         return tags;
 
