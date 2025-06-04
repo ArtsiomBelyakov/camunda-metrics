@@ -20,7 +20,7 @@ public abstract class Monitor {
 
     private final ProcessEngine processEngine;
     private final MeterRegistry meterRegistry;
-    private final Map<String, MultiGauge> multiGaugeMap = new HashMap<>();
+    protected final Map<String, MultiGauge> multiGaugeMap = new HashMap<>();
 
 
     public Monitor(ProcessEngine processEngine, MeterRegistry meterRegistry) {
@@ -40,26 +40,18 @@ public abstract class Monitor {
     protected abstract Collection<MultiGaugeData> retrieveGaugesData();
 
     public void update() {
-//        Collection<MultiGaugeData> gaugesData = retrieveGaugesData();
-//
-//        multiGaugeMap.forEach((key, value) -> value.register(
-//                gaugesData.stream().map(d -> getRow(key, d)).collect(Collectors.toList()),
-//                true));
         Collection<MultiGaugeData> gaugesData = retrieveGaugesData();
 
         multiGaugeMap.forEach((key, value) -> {
             Iterable<Row<?>> rows = gaugesData.stream()
                     .map(d -> getRow(key, d))
-                    .collect(Collectors.toList()); // Здесь возвращаем коллекцию
+                    .collect(Collectors.toList());
 
-            value.register(rows, true); // Теперь это будет Iterable
+            value.register(rows, true);
         });
-
     }
 
     private Row<MultiGaugeData> getRow(String gaugeName, MultiGaugeData d) {
-
-//        return Row.of(d.getTags(), d, gaugeData -> gaugeData.gaugesValues.get(gaugeName));
         Long value = d.getGaugesValues().get(gaugeName);
         return Row.of(d.getTags(), d, gaugeData -> value != null ? value : 0L);
     }
@@ -79,13 +71,12 @@ public abstract class Monitor {
             tags.and("tenant.id", pd.getTenantId());
         }
         return tags.and("process.definition.id", pd.getId()).and("process.definition.key", pd.getKey());
-
     }
 
     @AllArgsConstructor
     @Getter
-    protected class MultiGaugeData {
-        Map<String, Long> gaugesValues;
-        Tags tags;
+    public static class MultiGaugeData {
+        private final Map<String, Long> gaugesValues;
+        private final Tags tags;
     }
 }

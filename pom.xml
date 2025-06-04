@@ -33,8 +33,13 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.10.2</version>
             <scope>test</scope>
+        </dependency>
+
+        <!-- AssertJ -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
         </dependency>
 
         <!-- Mockito for mocking -->
@@ -64,6 +69,46 @@
             <groupId>org.camunda.bpm</groupId>
             <artifactId>camunda-bpm-junit5</artifactId>
             <version>7.23.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Camunda Engine for testing -->
+        <dependency>
+            <groupId>org.camunda.bpm</groupId>
+            <artifactId>camunda-engine</artifactId>
+            <version>${camunda.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Camunda Engine Spring for testing -->
+        <dependency>
+            <groupId>org.camunda.bpm</groupId>
+            <artifactId>camunda-engine-spring</artifactId>
+            <version>${camunda.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Spring Test -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>5.3.31</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- H2 Database for testing -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.2.224</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- PostgreSQL for testing -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.4</version>
             <scope>test</scope>
         </dependency>
         <!-- TEST END -->
@@ -112,7 +157,7 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <dependencies>
-                <!-- for locally test from InteliJ -->
+                <!-- for locally test from IntelliJ -->
                 <dependency>
                     <groupId>org.camunda.bpm.springboot</groupId>
                     <artifactId>camunda-bpm-spring-boot-starter</artifactId>
