@@ -62,4 +62,4 @@ class MetricsConfigTest {
             null, null, Meter.Type.COUNTER);
         assertEquals(MeterFilterReply.NEUTRAL, filter.accept(engineRestMetricWithTags));
     }
-} 
+}

@@ -8,4 +8,4 @@ public class FailingDelegate implements JavaDelegate {
     public void execute(DelegateExecution execution) throws Exception {
         throw new RuntimeException("This is a test incident");
     }
-} 
+}
