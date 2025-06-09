@@ -15,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
 
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(ProcessEngineExtension.class)
@@ -30,16 +32,27 @@ class ProcessInstanceSnapshotMonitorTest {
         MeterRegistry meterRegistry = new SimpleMeterRegistry();
         monitor = new ProcessInstanceSnapshotMonitor(processEngine, meterRegistry);
         runtimeService = processEngine.getRuntimeService();
-
     }
 
     @Test
-    @Deployment(resources = "bpmn/task-process.bpmn")
+    void testGetGaugeNames() {
+        // Act
+        List<String> gaugeNames = monitor.getGaugeNames();
+
+        // Assert
+        assertThat(gaugeNames).containsExactlyInAnyOrder(
+                Meters.PROCESS_INSTANCES_RUNNING.getMeterName(),
+                Meters.PROCESS_INSTANCES_SUSPENDED.getMeterName()
+        );
+    }
+
+    @Test
+    @Deployment(resources = "bpmn/test.process.bpmn")
     void testRetrieveGaugesDataWithRunningInstance() {
         // Arrange
-        runtimeService.startProcessInstanceByKey("taskProcess");
+        runtimeService.startProcessInstanceByKey("test.process");
         ProcessInstanceQuery query = runtimeService.createProcessInstanceQuery();
-        ProcessInstance instance = query.singleResult();
+        ProcessInstance instance = query.active().singleResult();
         assertNotNull(instance);
         assertFalse(instance.isSuspended());
 
@@ -56,10 +69,10 @@ class ProcessInstanceSnapshotMonitorTest {
     }
 
     @Test
-    @Deployment(resources = "bpmn/task-process.bpmn")
+    @Deployment(resources = "bpmn/test.process.bpmn")
     void testRetrieveGaugesDataWithSuspendedInstance() {
         // Arrange
-        ProcessInstance instance = runtimeService.startProcessInstanceByKey("taskProcess");
+        ProcessInstance instance = runtimeService.startProcessInstanceByKey("test.process");
         runtimeService.suspendProcessInstanceById(instance.getId());
         ProcessInstanceQuery query = runtimeService.createProcessInstanceQuery();
         ProcessInstance suspendedInstance = query.singleResult();
@@ -79,11 +92,11 @@ class ProcessInstanceSnapshotMonitorTest {
     }
 
     @Test
-    @Deployment(resources = "bpmn/task-process.bpmn")
+    @Deployment(resources = "bpmn/test.process.bpmn")
     void testRetrieveGaugesDataWithMultipleInstances() {
         // Arrange
-        runtimeService.startProcessInstanceByKey("taskProcess");
-        ProcessInstance instance = runtimeService.startProcessInstanceByKey("taskProcess");
+        runtimeService.startProcessInstanceByKey("test.process");
+        ProcessInstance instance = runtimeService.startProcessInstanceByKey("test.process");
         runtimeService.suspendProcessInstanceById(instance.getId());
         ProcessInstanceQuery query = runtimeService.createProcessInstanceQuery();
         List<ProcessInstance> instances = query.list();
@@ -100,4 +113,4 @@ class ProcessInstanceSnapshotMonitorTest {
         assertEquals(2L, data.getGaugesValues().get(Meters.PROCESS_INSTANCES_RUNNING.getMeterName()));
         assertEquals(1L, data.getGaugesValues().get(Meters.PROCESS_INSTANCES_SUSPENDED.getMeterName()));
     }
-} 
+}

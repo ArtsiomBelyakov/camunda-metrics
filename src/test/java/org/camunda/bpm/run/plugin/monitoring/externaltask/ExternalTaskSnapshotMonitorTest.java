@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(ProcessEngineExtension.class)
@@ -34,15 +35,16 @@ class ExternalTaskSnapshotMonitorTest {
         List<String> gaugeNames = monitor.getGaugeNames();
 
         // Assert
-        assertEquals(4, gaugeNames.size());
-        assertTrue(gaugeNames.contains(Meters.EXTERNAL_TASKS_OPEN.getMeterName()));
-        assertTrue(gaugeNames.contains(Meters.EXTERNAL_TASKS_OPEN_ERROR.getMeterName()));
-        assertTrue(gaugeNames.contains(Meters.EXTERNAL_TASKS_ENDED.getMeterName()));
-        assertTrue(gaugeNames.contains(Meters.EXTERNAL_TASKS_STARTED.getMeterName()));
+        assertThat(gaugeNames).containsExactlyInAnyOrder(
+                Meters.EXTERNAL_TASKS_OPEN.getMeterName(),
+                Meters.EXTERNAL_TASKS_OPEN_ERROR.getMeterName(),
+                Meters.EXTERNAL_TASKS_ENDED.getMeterName(),
+                Meters.EXTERNAL_TASKS_STARTED.getMeterName()
+        );
     }
 
     @Test
-    @Deployment(resources = "bpmn/external-task.bpmn")
+    @Deployment(resources = "bpmn/test.external_task.bpmn")
     void testRetrieveGaugesDataWithRegularTask() {
         // Arrange
         processEngine.getRuntimeService().startProcessInstanceByKey("test-external-task");
@@ -65,7 +67,7 @@ class ExternalTaskSnapshotMonitorTest {
     }
 
     @Test
-    @Deployment(resources = "bpmn/external-task.bpmn")
+    @Deployment(resources = "bpmn/test.external_task.bpmn")
     void testRetrieveGaugesDataWithErrorTask() {
         // Arrange
         var workerId = "test-worker";
@@ -90,7 +92,7 @@ class ExternalTaskSnapshotMonitorTest {
     }
 
     @Test
-    @Deployment(resources = "bpmn/external-task.bpmn")
+    @Deployment(resources = "bpmn/test.external_task.bpmn")
     void testRetrieveGaugesDataWithMultipleTasks() {
         // Arrange
         var workerId = "test-worker";
@@ -120,7 +122,7 @@ class ExternalTaskSnapshotMonitorTest {
     }
 
     @Test
-    @Deployment(resources = "bpmn/external-task.bpmn")
+    @Deployment(resources = "bpmn/test.external_task.bpmn")
     void testRetrieveGaugesDataWithEndedTask() {
         // Arrange
         var workerId = "test-worker";
@@ -149,7 +151,7 @@ class ExternalTaskSnapshotMonitorTest {
     }
 
     @Test
-    @Deployment(resources = "bpmn/external-task.bpmn")
+    @Deployment(resources = "bpmn/test.external_task.bpmn")
     void testRetrieveGaugesDataWithMixedTasks() {
         // Arrange
         var workerId = "test-worker";

@@ -1,5 +1,7 @@
 package org.camunda.bpm.run.plugin.monitoring.incidents;
 
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
@@ -14,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.camunda.bpm.run.plugin.monitoring.Meters.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(ProcessEngineExtension.class)
@@ -36,8 +40,14 @@ class IncidentSnapshotMonitorTest {
         List<String> gaugeNames = monitor.getGaugeNames();
 
         // Assert
-        assertEquals(6, gaugeNames.size());
-        assertTrue(gaugeNames.contains(Meters.INCIDENTS_OPEN.getMeterName()));
+        assertThat(gaugeNames).containsExactlyInAnyOrder(
+                INCIDENTS_CREATED.getMeterName(),
+                INCIDENTS_DELETED.getMeterName(),
+                INCIDENTS_RESOLVED.getMeterName(),
+                INCIDENTS_OPEN.getMeterName(),
+                INCIDENTS_OPEN_NEWEST.getMeterName(),
+                INCIDENTS_OPEN_OLDEST.getMeterName()
+        );
     }
 
     @Test
@@ -68,26 +78,28 @@ class IncidentSnapshotMonitorTest {
 
         // Verify all expected tags are present with correct values
         var tags = data.getTags();
-        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("topic.name") && tag.getValue().equals(topicName)),
-                "Topic name tag should match");
-        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("tenant.id") && tag.getValue().isEmpty()),
-                "Tenant ID should be empty");
-        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("process.definition.id")),
-                "Process definition ID should be present");
-        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("process.definition.key")
-                && tag.getValue().equals("test.incident.call_activity1")),
-                "Process definition key should be present");
-        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("activity.id")
-                        && tag.getValue().equals("external.task")),
-                "Activity ID should be present");
-        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("failed.activity.id")),
-                "Failed activity ID should be present");
-        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("incident.type")
-                && tag.getValue().equals("failedExternalTask")),
-                "Incident type should be present");
+        assertThat(tags.stream().map(Tag::getKey).toList())
+                .containsExactlyInAnyOrder(
+                        "topic.name",
+                        "tenant.id",
+                        "process.definition.id",
+                        "process.definition.key",
+                        "activity.id",
+                        "failed.activity.id",
+                        "incident.type"
+                );
+        assertThat(tags).allMatch(tag -> switch (tag.getKey()) {
+            case "topic.name" -> tag.getValue().equals(topicName);
+            case "tenant.id" -> tag.getValue().isEmpty();
+            case "process.definition.id" -> !tag.getValue().isEmpty();
+            case "process.definition.key" -> tag.getValue().equals("test.incident.call_activity1");
+            case "activity.id" -> tag.getValue().equals("external.task");
+            case "incident.type" -> tag.getValue().equals("failedExternalTask");
+            default -> true;
+        });
 
         // Verify gauge values
-        assertEquals(1L, data.getGaugesValues().get(Meters.INCIDENTS_OPEN.getMeterName()));
+        assertEquals(1, data.getGaugesValues().get(Meters.INCIDENTS_OPEN.getMeterName()));
     }
 
     @Test
@@ -108,18 +120,18 @@ class IncidentSnapshotMonitorTest {
         var firstTask = externalTaskService.fetchAndLock(1, workerId)
                 .topic(topicName, 1000)
                 .execute();
-        
+
         // Complete first task successfully
         externalTaskService.complete(firstTask.get(0).getId(), workerId);
-        
+
         // Second task in test.incident.called.terminate
         var secondTask = externalTaskService.fetchAndLock(1, workerId)
                 .topic(topicName, 1000)
                 .execute();
-        
+
         // Fail second task
         externalTaskService.handleFailure(secondTask.get(0).getId(), workerId, "test error", 0, 0);
-        
+
         var gaugesData = monitor.retrieveGaugesData();
 
         // Assert
@@ -127,28 +139,164 @@ class IncidentSnapshotMonitorTest {
         assertEquals(1, gaugesData.size());
 
         var data = gaugesData.iterator().next();
-        
+
         // Verify all expected tags are present with correct values
         var tags = data.getTags();
-        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("topic.name") && tag.getValue().equals(topicName)),
-                "Topic name tag should match");
-        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("tenant.id") && tag.getValue().isEmpty()),
-                "Tenant ID should be empty");
-        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("process.definition.id")),
-                "Process definition ID should be present");
-        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("process.definition.key")
-                && tag.getValue().equals("test.incident.called.terminate")),
-                "Process definition key should be present");
-        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("activity.id")
-                && tag.getValue().equals("external.task")),
-                "Activity ID should be present");
-        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("failed.activity.id")),
-                "Failed activity ID should be present");
-        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("incident.type")
-                && tag.getValue().equals("failedExternalTask")),
-                "Incident type should be present");
-        
+        assertThat(tags.stream().map(Tag::getKey).toList())
+                .containsExactlyInAnyOrder(
+                        "topic.name",
+                        "tenant.id",
+                        "process.definition.id",
+                        "process.definition.key",
+                        "activity.id",
+                        "failed.activity.id",
+                        "incident.type"
+                );
+        assertThat(tags).allMatch(tag -> switch (tag.getKey()) {
+            case "topic.name" -> tag.getValue().equals(topicName);
+            case "tenant.id" -> tag.getValue().isEmpty();
+            case "process.definition.id" -> !tag.getValue().isEmpty();
+            case "process.definition.key" -> tag.getValue().equals("test.incident.called.terminate");
+            case "activity.id" -> tag.getValue().equals("internal.external.task");
+            case "incident.type" -> tag.getValue().equals("failedExternalTask");
+            default -> true;
+        });
+
         // Verify gauge values
-        assertEquals(1L, data.getGaugesValues().get(Meters.INCIDENTS_OPEN.getMeterName()));
+        assertEquals(1, data.getGaugesValues().get(Meters.INCIDENTS_OPEN.getMeterName()));
     }
 }
+// todo
+//    @Test
+//    @Deployment(resources = "bpmn/test.incident.failed.job.bpmn")
+//    void testRetrieveGaugesDataWithFailedJobIncident() {
+//        // Arrange
+//        runtimeService.startProcessInstanceByKey("test.incident.failed.job");
+//
+//        // Act
+//        var gaugesData = monitor.retrieveGaugesData();
+//
+//        // Assert
+//        assertNotNull(gaugesData);
+//        assertEquals(1, gaugesData.size());
+//
+//        var data = gaugesData.iterator().next();
+//
+//        // Verify all expected tags are present with correct values
+//        var tags = data.getTags();
+//        assertThat(tags.stream().map(Tag::getKey).toList())
+//                .containsExactlyInAnyOrder(
+//                        "tenant.id",
+//                        "process.definition.id",
+//                        "process.definition.key",
+//                        "activity.id",
+//                        "failed.activity.id",
+//                        "incident.type"
+//                );
+//        assertThat(tags).allMatch(tag -> switch (tag.getKey()) {
+//            case "tenant.id" -> tag.getValue().isEmpty();
+//            case "process.definition.id" -> !tag.getValue().isEmpty();
+//            case "process.definition.key" -> tag.getValue().equals("test.incident.failed.job");
+//            case "activity.id" -> tag.getValue().equals("failing.service.task");
+//            case "incident.type" -> tag.getValue().equals("failedJob");
+//            default -> true;
+//        });
+//
+//        // Verify gauge values
+//        assertEquals(1, data.getGaugesValues().get(Meters.INCIDENTS_OPEN.getMeterName()));
+//    }
+//
+//    @Test
+//    @Deployment(resources = "bpmn/test.incident.conditional.bpmn")
+//    void testRetrieveGaugesDataWithConditionalIncident() {
+//        // Arrange
+//        var processInstance = runtimeService.startProcessInstanceByKey("test.incident.conditional");
+//
+//        // Create incident manually
+//        var incident = runtimeService.createIncident(
+//            "conditionalEvent",
+//            processInstance.getId(),
+//            "conditional.event",
+//            "Conditional event failed"
+//        );
+//
+//        // Act
+//        var gaugesData = monitor.retrieveGaugesData();
+//
+//        // Assert
+//        assertNotNull(gaugesData);
+//        assertEquals(1, gaugesData.size());
+//
+//        var data = gaugesData.iterator().next();
+//
+//        // Verify all expected tags are present with correct values
+//        var tags = data.getTags();
+//        assertThat(tags.stream().map(Tag::getKey).toList())
+//                .containsExactlyInAnyOrder(
+//                        "tenant.id",
+//                        "process.definition.id",
+//                        "process.definition.key",
+//                        "activity.id",
+//                        "failed.activity.id",
+//                        "incident.type"
+//                );
+//        assertThat(tags).allMatch(tag -> switch (tag.getKey()) {
+//            case "tenant.id" -> tag.getValue().isEmpty();
+//            case "process.definition.id" -> !tag.getValue().isEmpty();
+//            case "process.definition.key" -> tag.getValue().equals("test.incident.conditional");
+//            case "activity.id" -> tag.getValue().equals("conditional.event");
+//            case "incident.type" -> tag.getValue().equals("conditionalEvent");
+//            default -> true;
+//        });
+//
+//        // Verify gauge values
+//        assertEquals(1, data.getGaugesValues().get(Meters.INCIDENTS_OPEN.getMeterName()));
+//    }
+//
+//    @Test
+//    @Deployment(resources = "bpmn/test.incident.timer.bpmn")
+//    void testRetrieveGaugesDataWithTimerIncident() {
+//        // Arrange
+//        var processInstance = runtimeService.startProcessInstanceByKey("test.incident.timer");
+//
+//        // Create incident manually
+//        var incident = runtimeService.createIncident(
+//            "timerEvent",
+//            processInstance.getId(),
+//            "timer.event",
+//            "Timer event failed"
+//        );
+//
+//        // Act
+//        var gaugesData = monitor.retrieveGaugesData();
+//
+//        // Assert
+//        assertNotNull(gaugesData);
+//        assertEquals(1, gaugesData.size());
+//
+//        var data = gaugesData.iterator().next();
+//
+//        // Verify all expected tags are present with correct values
+//        var tags = data.getTags();
+//        assertThat(tags.stream().map(Tag::getKey).toList())
+//                .containsExactlyInAnyOrder(
+//                        "tenant.id",
+//                        "process.definition.id",
+//                        "process.definition.key",
+//                        "activity.id",
+//                        "failed.activity.id",
+//                        "incident.type"
+//                );
+//        assertThat(tags).allMatch(tag -> switch (tag.getKey()) {
+//            case "tenant.id" -> tag.getValue().isEmpty();
+//            case "process.definition.id" -> !tag.getValue().isEmpty();
+//            case "process.definition.key" -> tag.getValue().equals("test.incident.timer");
+//            case "activity.id" -> tag.getValue().equals("timer.event");
+//            case "incident.type" -> tag.getValue().equals("timerEvent");
+//            default -> true;
+//        });
+//
+//        // Verify gauge values
+//        assertEquals(1, data.getGaugesValues().get(Meters.INCIDENTS_OPEN.getMeterName()));
+//    }
+//}

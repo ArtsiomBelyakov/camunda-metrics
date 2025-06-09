@@ -18,6 +18,7 @@ public class ProcessInstanceSnapshotMonitor extends Monitor {
 
     @Override
     protected List<String> getGaugeNames() {
+        // todo review the set of the meters
         return Arrays.asList(
                 Meters.PROCESS_INSTANCES_RUNNING.getMeterName(),
                 Meters.PROCESS_INSTANCES_SUSPENDED.getMeterName()

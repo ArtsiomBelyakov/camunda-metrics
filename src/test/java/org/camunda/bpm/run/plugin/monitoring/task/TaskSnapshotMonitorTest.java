@@ -1,3 +1,4 @@
+// todo test if the user tasks will be used
 //package org.camunda.bpm.run.plugin.monitoring.task;
 //
 //import io.micrometer.core.instrument.MeterRegistry;
@@ -11,10 +12,8 @@
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.extension.ExtendWith;
-//import org.springframework.beans.factory.annotation.Autowired;
 //
-//import java.util.List;
-//
+//import static org.assertj.core.api.Assertions.assertThat;
 //import static org.junit.jupiter.api.Assertions.*;
 //
 //@ExtendWith(ProcessEngineExtension.class)
@@ -34,6 +33,7 @@
 //    void testRetrieveGaugesDataWithProcessInstanceTask() {
 //        // Arrange
 //        processEngine.getRuntimeService().startProcessInstanceByKey("taskProcess");
+//        TaskService taskService = processEngine.getTaskService();
 //        Task task = taskService.createTaskQuery().singleResult();
 //        assertNotNull(task);
 //
@@ -44,10 +44,12 @@
 //        assertNotNull(gaugesData);
 //        assertEquals(1, gaugesData.size());
 //
-//        var data = gaugesData.iterator().next();
-//        assertEquals(1L, data.getGaugesValues().get(Meters.TASKS_OPEN.getMeterName()));
-//        assertTrue(data.getGaugesValues().get(Meters.TASKS_OPEN_NEWEST.getMeterName()) > 0);
-//        assertTrue(data.getGaugesValues().get(Meters.TASKS_OPEN_OLDEST.getMeterName()) > 0);
+//        var gaugesValues = gaugesData.iterator().next().getGaugesValues();
+//        assertEquals(1L, gaugesValues.get(Meters.TASKS_OPEN.getMeterName()));
+//        assertThat(gaugesValues.get(Meters.TASKS_OPEN_NEWEST.getMeterName()))
+//                .isGreaterThan(0);
+//        assertThat(gaugesValues.get(Meters.TASKS_OPEN_OLDEST.getMeterName()))
+//                .isGreaterThan(0);
 //    }
 //
 //    @Test
@@ -55,6 +57,7 @@
 //    void testRetrieveGaugesDataWithCaseInstanceTask() {
 //        // Arrange
 //        processEngine.getCaseService().createCaseInstanceByKey("caseTask");
+//        TaskService taskService = processEngine.getTaskService();
 //        Task task = taskService.createTaskQuery().singleResult();
 //        assertNotNull(task);
 //
@@ -67,13 +70,16 @@
 //
 //        var data = gaugesData.iterator().next();
 //        assertEquals(1L, data.getGaugesValues().get(Meters.TASKS_OPEN.getMeterName()));
-//        assertTrue(data.getGaugesValues().get(Meters.TASKS_OPEN_NEWEST.getMeterName()) > 0);
-//        assertTrue(data.getGaugesValues().get(Meters.TASKS_OPEN_OLDEST.getMeterName()) > 0);
+//        assertThat(data.getGaugesValues().get(Meters.TASKS_OPEN_NEWEST.getMeterName()))
+//                .isGreaterThan(0);
+//        assertThat(data.getGaugesValues().get(Meters.TASKS_OPEN_OLDEST.getMeterName()))
+//                .isGreaterThan(0);
 //    }
 //
 //    @Test
 //    void testRetrieveGaugesDataWithStandaloneTask() {
 //        // Arrange
+//        TaskService taskService = processEngine.getTaskService();
 //        Task task = taskService.newTask();
 //        task.setName("standalone-task");
 //        taskService.saveTask(task);
@@ -87,8 +93,10 @@
 //
 //        var data = gaugesData.iterator().next();
 //        assertEquals(1L, data.getGaugesValues().get(Meters.TASKS_OPEN.getMeterName()));
-//        assertTrue(data.getGaugesValues().get(Meters.TASKS_OPEN_NEWEST.getMeterName()) > 0);
-//        assertTrue(data.getGaugesValues().get(Meters.TASKS_OPEN_OLDEST.getMeterName()) > 0);
+//        assertThat(data.getGaugesValues().get(Meters.TASKS_OPEN_NEWEST.getMeterName()))
+//                .isGreaterThan(0);
+//        assertThat(data.getGaugesValues().get(Meters.TASKS_OPEN_OLDEST.getMeterName()))
+//                .isGreaterThan(0);
 //
 //        // Cleanup
 //        taskService.deleteTask(task.getId());
