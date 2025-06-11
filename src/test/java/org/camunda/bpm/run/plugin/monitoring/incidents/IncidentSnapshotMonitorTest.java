@@ -1,12 +1,9 @@
 package org.camunda.bpm.run.plugin.monitoring.incidents;
 
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.runtime.Incident;
-import org.camunda.bpm.engine.runtime.IncidentQuery;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.camunda.bpm.run.plugin.monitoring.Meters;
@@ -18,7 +15,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.camunda.bpm.run.plugin.monitoring.Meters.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(ProcessEngineExtension.class)
 class IncidentSnapshotMonitorTest {

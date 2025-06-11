@@ -72,14 +72,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Camunda Engine for testing -->
-        <dependency>
-            <groupId>org.camunda.bpm</groupId>
-            <artifactId>camunda-engine</artifactId>
-            <version>${camunda.version}</version>
-            <scope>test</scope>
-        </dependency>
-
         <!-- Camunda Engine Spring for testing -->
         <dependency>
             <groupId>org.camunda.bpm</groupId>
