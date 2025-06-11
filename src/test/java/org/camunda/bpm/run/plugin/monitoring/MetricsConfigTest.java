@@ -17,12 +17,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class MetricsConfigTest {
 
     private AnnotationConfigApplicationContext context;
-    private MeterRegistry registry;
 
     @BeforeEach
     void setUp() {
         context = new AnnotationConfigApplicationContext(MetricsConfig.class);
-        registry = new SimpleMeterRegistry();
+        MeterRegistry registry = new SimpleMeterRegistry();
         Metrics.globalRegistry.add(registry);
     }
 

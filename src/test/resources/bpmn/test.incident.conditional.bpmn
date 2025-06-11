@@ -8,7 +8,7 @@
       <bpmn:incoming>Flow_1</bpmn:incoming>
       <bpmn:outgoing>Flow_2</bpmn:outgoing>
       <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_1">
-        <bpmn:condition xsi:type="bpmn:tFormalExpression" />
+        <bpmn:condition xsi:type="bpmn:tFormalExpression">${false}</bpmn:condition>
       </bpmn:conditionalEventDefinition>
     </bpmn:intermediateCatchEvent>
     <bpmn:endEvent id="EndEvent_1" name="end">

@@ -156,6 +156,9 @@
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
+            <properties>
+                <postgres.version>42.7.4</postgres.version>
+            </properties>
             <dependencies>
                 <!-- for locally test from IntelliJ -->
                 <dependency>
@@ -163,6 +166,7 @@
                     <artifactId>camunda-bpm-spring-boot-starter</artifactId>
                     <version>${camunda.version}</version>
                 </dependency>
+
                 <!-- Camunda Webapp starter -->
                 <dependency>
                     <groupId>org.camunda.bpm.springboot</groupId>
@@ -185,11 +189,11 @@
                     <version>${spring.version}</version>
                 </dependency>
 
-                <!-- PostgreSQL -->
+                <!-- PostgresSQL -->
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
-                    <version>42.7.4</version>
+                    <version>${postgres.version}</version>
                 </dependency>
             </dependencies>
         </profile>

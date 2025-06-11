@@ -83,4 +83,4 @@ public class TaggedCounterTest {
         assertNotNull(counter, "Counter should be created");
         assertEquals(3.0, counter.count(), "Counter should be incremented three times");
     }
-} 
+}
