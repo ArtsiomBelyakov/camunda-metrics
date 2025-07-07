@@ -13,6 +13,7 @@
         <camunda.version>7.22.0</camunda.version>
         <spring.version>3.3.3</spring.version>
         <micrometer.version>1.13.6</micrometer.version>
+        <jersey-micrometer.version>3.1.9</jersey-micrometer.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -38,7 +39,7 @@
         <dependency>
             <groupId>org.glassfish.jersey.ext</groupId>
             <artifactId>jersey-micrometer</artifactId>
-            <version>3.1.9</version>
+            <version>${jersey-micrometer.version}</version>
         </dependency>
 
         <dependency>
