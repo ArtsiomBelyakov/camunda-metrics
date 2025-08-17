@@ -1,7 +1,7 @@
 package org.camunda.bpm.run.plugin.monitoring;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.run.plugin.monitoring.externaltask.ExternalTaskSnapshotMonitor;

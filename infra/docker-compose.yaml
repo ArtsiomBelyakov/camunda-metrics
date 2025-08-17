@@ -8,6 +8,8 @@ services:
       - POSTGRES_DB=process_engine
     ports:
       - "5432:5432"
+    networks:
+      - monitoring
 
   prometheus:
     image: prom/prometheus
@@ -38,10 +40,11 @@ services:
 networks:
   monitoring:
     driver: bridge
+
 volumes:
   grafana:
-    external: true
+#    external: true
     name: camunda-metrics_grafana
   prometheus:
-    external: true
+#    external: true
     name: camunda-metrics_prometheus
