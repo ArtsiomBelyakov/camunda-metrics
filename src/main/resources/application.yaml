@@ -1,4 +1,8 @@
 #for test locally
+slo-metrics:
+    enabled: true
+    service-name: camunda
+
 management:
   endpoints:
     web:

@@ -67,12 +67,7 @@
         </dependency>
         <dependency>
             <groupId>corp.platform.gitlab</groupId>
-            <artifactId>observability-base</artifactId>
-            <version>0.1.5-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>corp.platform.gitlab</groupId>
-            <artifactId>observability-sb3</artifactId>
+            <artifactId>observability-jaxrs-sb3</artifactId>
             <version>0.1.5-SNAPSHOT</version>
         </dependency>
         <dependency>
