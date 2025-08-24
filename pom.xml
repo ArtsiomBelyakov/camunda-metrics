@@ -23,13 +23,20 @@
                 <groupId>org.camunda.bpm</groupId>
                 <artifactId>camunda-bom</artifactId>
                 <version>${camunda.version}</version>
-                <scope>import</scope>
                 <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>corp.platform.gitlab</groupId>
+                <artifactId>observability</artifactId>
+                <version>0.1.5-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -57,6 +64,16 @@
             <groupId>org.camunda.bpm</groupId>
             <artifactId>camunda-engine</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>corp.platform.gitlab</groupId>
+            <artifactId>observability-base</artifactId>
+            <version>0.1.5-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>corp.platform.gitlab</groupId>
+            <artifactId>observability-sb3</artifactId>
+            <version>0.1.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
