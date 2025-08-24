@@ -13,7 +13,7 @@
         <camunda.version>7.22.0</camunda.version>
         <spring.version>3.3.3</spring.version>
         <micrometer.version>1.13.6</micrometer.version>
-        <jersey-micrometer.version>2.41</jersey-micrometer.version>
+        <jersey-micrometer.version>3.1.9</jersey-micrometer.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -42,8 +42,8 @@
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
         <dependency>
-            <groupId>jakarta.annotation</groupId>
-            <artifactId>jakarta.annotation-api</artifactId>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-micrometer</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -96,7 +96,7 @@
         <dependency>
             <groupId>org.camunda.bpm</groupId>
             <artifactId>camunda-bpm-junit5</artifactId>
-            <version>7.23.0</version>
+            <version>${camunda.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -108,7 +108,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>5.3.31</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -131,14 +130,14 @@
                 <!-- for local test from IntelliJ -->
                 <dependency>
                     <groupId>org.camunda.bpm.springboot</groupId>
-                    <artifactId>camunda-bpm-spring-boot-starter</artifactId>
+                    <artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
                     <version>${camunda.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>com.sun.xml.bind</groupId>
-                            <artifactId>jaxb-impl</artifactId>
-                        </exclusion>
-                    </exclusions>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.camunda.bpm.springboot</groupId>
+                    <artifactId>camunda-bpm-spring-boot-starter-rest</artifactId>
+                    <version>${camunda.version}</version>
                 </dependency>
 
                 <!-- Spring Data JPA -->
