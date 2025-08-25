@@ -13,7 +13,6 @@
         <camunda.version>7.22.0</camunda.version>
         <spring.version>3.3.3</spring.version>
         <micrometer.version>1.13.6</micrometer.version>
-        <jersey-micrometer.version>3.1.9</jersey-micrometer.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -114,7 +113,6 @@
         <dependency>
             <groupId>org.camunda.bpm</groupId>
             <artifactId>camunda-engine-spring</artifactId>
-            <version>${camunda.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
