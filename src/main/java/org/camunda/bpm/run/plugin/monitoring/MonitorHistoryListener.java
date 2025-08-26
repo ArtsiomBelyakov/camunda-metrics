@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+import java.util.Optional;
+
 @Component
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class MonitorHistoryListener {
@@ -72,8 +75,13 @@ public class MonitorHistoryListener {
     }
 
     private Tags createIncidentTags(HistoricIncidentEventEntity historyEvent) {
-        return IncidentMeterTags.createTags(historyEvent.getTenantId(), historyEvent.getProcessDefinitionId(),
-                historyEvent.getProcessDefinitionKey(), historyEvent.getActivityId(),
-                historyEvent.getFailedActivityId(), historyEvent.getIncidentType());
+        return IncidentMeterTags.createTags(
+                historyEvent.getTenantId(),
+                historyEvent.getProcessDefinitionId(),
+                historyEvent.getProcessDefinitionKey(),
+                historyEvent.getActivityId(),
+                historyEvent.getFailedActivityId(),
+                historyEvent.getIncidentType()
+        );
     }
 }

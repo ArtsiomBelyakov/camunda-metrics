@@ -10,6 +10,7 @@ import org.camunda.bpm.run.plugin.monitoring.Meters;
 import org.camunda.bpm.run.plugin.monitoring.Monitor;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class IncidentSnapshotMonitor extends Monitor {
@@ -52,15 +53,16 @@ public class IncidentSnapshotMonitor extends Monitor {
             var processDefinitionId = processDefinition.getId();
             var processDefinitionKey = processDefinition.getKey();
             var activityId = incident.getActivityId();
-            var failedActivityId = incident.getActivityId();
+            var failedActivityId = incident.getFailedActivityId();
             var incidentType = incident.getIncidentType();
+
             Tags tags = IncidentMeterTags.createTags(
-                    tenantId == null ? "" : tenantId,
-                    processDefinitionId == null ? "" : processDefinitionId,
-                    processDefinitionKey == null ? "" : processDefinitionKey,
-                    activityId == null ? "" : activityId,
-                    failedActivityId == null ? "" : failedActivityId,
-                    incidentType == null ? "" : incidentType
+                    tenantId,
+                    processDefinitionId,
+                    processDefinitionKey,
+                    activityId,
+                    failedActivityId,
+                    incidentType
             ).and("topic.name", Objects.requireNonNullElse(topicName, ""));
 
 

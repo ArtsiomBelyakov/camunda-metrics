@@ -19,6 +19,7 @@ public enum Meters {
     TASKS_COMPLETED("camunda.tasks.completed"), TASKS_DELETED("camunda.tasks.deleted"),
     TASKS_OPEN("camunda.tasks.open.total"), TASKS_OPEN_NEWEST("camunda.tasks.open.age.newest.seconds"),
     TASKS_OPEN_OLDEST("camunda.tasks.open.age.oldest.seconds"),
+    // todo these 2 does not used (STARTED and ENDED)
     EXTERNAL_TASKS_STARTED("camunda.external.tasks.started"), EXTERNAL_TASKS_ENDED("camunda.external.tasks.ended"),
     EXTERNAL_TASKS_OPEN("camunda.external.tasks.open.total"),
     EXTERNAL_TASKS_OPEN_ERROR("camunda.external.tasks.open.error.total"),
