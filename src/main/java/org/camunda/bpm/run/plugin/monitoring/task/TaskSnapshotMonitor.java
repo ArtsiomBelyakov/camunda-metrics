@@ -10,6 +10,7 @@ import org.camunda.bpm.run.plugin.monitoring.Monitor;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TaskSnapshotMonitor extends Monitor {
 
@@ -19,8 +20,8 @@ public class TaskSnapshotMonitor extends Monitor {
 
     @Override
     protected List<String> getGaugeNames() {
-        return Arrays.asList(Meters.TASKS_OPEN, Meters.TASKS_OPEN_NEWEST, Meters.TASKS_OPEN_OLDEST).stream()
-                .map(Meters::getMeterName).collect(Collectors.toList());
+        return Stream.of(Meters.TASKS_OPEN, Meters.TASKS_OPEN_NEWEST, Meters.TASKS_OPEN_OLDEST)
+                .map(Meters::getMeterName).toList();
     }
 
     @Override

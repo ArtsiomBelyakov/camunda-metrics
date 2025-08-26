@@ -31,8 +31,13 @@ public class ExternalTaskSnapshotMonitor extends Monitor {
                 .unlimitedList();
 
         for (ExternalTask task : tasks) {
-            Tags tags = ExternalTaskMeterTags.createTags(task.getTenantId(), task.getProcessDefinitionId(),
-                    task.getProcessDefinitionKey(), task.getActivityId(), task.getTopicName());
+            Tags tags = ExternalTaskMeterTags.createTags(
+                    task.getTenantId(),
+                    task.getProcessDefinitionId(),
+                    task.getProcessDefinitionKey(),
+                    task.getActivityId(),
+                    task.getTopicName()
+            );
 
             MultiGaugeData data = map.computeIfAbsent(tags, key -> {
                 Map<String, Long> gaugeValues = new HashMap<>();

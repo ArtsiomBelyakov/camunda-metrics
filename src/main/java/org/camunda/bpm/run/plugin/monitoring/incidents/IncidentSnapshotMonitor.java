@@ -10,6 +10,7 @@ import org.camunda.bpm.run.plugin.monitoring.Meters;
 import org.camunda.bpm.run.plugin.monitoring.Monitor;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class IncidentSnapshotMonitor extends Monitor {
@@ -28,41 +29,49 @@ public class IncidentSnapshotMonitor extends Monitor {
 
     @Override
     protected Collection<MultiGaugeData> retrieveGaugesData() {
-        Map<String, MultiGaugeData> map = new HashMap<>();
-        List<Incident> incidents = getProcessEngine().getRuntimeService().createIncidentQuery().unlimitedList();
+        Map<Tags, MultiGaugeData> map = new HashMap<>();
+        List<Incident> incidents = getProcessEngine().getRuntimeService().createIncidentQuery().unlimitedList()
+                .stream()
+                .filter(incident -> incident.getId().equals(incident.getRootCauseIncidentId())
+                        || incident.getRootCauseIncidentId() == null)
+                .toList();
         Date now = new Date();
 
 
         for (Incident incident : incidents) {
-            String groupByKey = incident.getProcessDefinitionId();
-            MultiGaugeData data = map.computeIfAbsent(groupByKey, key -> {
+            ProcessDefinition processDefinition = getProcessDefinition(incident.getProcessDefinitionId());
+            // Получаем имя топика внешней задачи, если это инцидент, связанный с внешней задачей
+            String topicName = Optional.ofNullable(getProcessEngine().getExternalTaskService()
+                            .createExternalTaskQuery()
+                            .executionId(incident.getExecutionId())
+                            .singleResult())
+                    .map(ExternalTask::getTopicName)
+                    .orElse(null);
+
+            // moved outside to prevent duplicate tags ( if the same process definition id )
+            var tenantId = incident.getTenantId();
+            var processDefinitionId = processDefinition.getId();
+            var processDefinitionKey = processDefinition.getKey();
+            var activityId = incident.getActivityId();
+            var failedActivityId = incident.getFailedActivityId();
+            var incidentType = incident.getIncidentType();
+
+            Tags tags = IncidentMeterTags.createTags(
+                    tenantId,
+                    processDefinitionId,
+                    processDefinitionKey,
+                    activityId,
+                    failedActivityId,
+                    incidentType
+            ).and("topic.name", Objects.requireNonNullElse(topicName, ""));
+
+
+            MultiGaugeData data = map.computeIfAbsent(tags, key -> {
                 Map<String, Long> gaugeValues = new HashMap<>();
                 gaugeValues.put(Meters.INCIDENTS_OPEN_NEWEST.getMeterName(), Long.MAX_VALUE);
                 gaugeValues.put(Meters.INCIDENTS_OPEN_OLDEST.getMeterName(), Long.MIN_VALUE);
                 gaugeValues.put(Meters.INCIDENTS_OPEN.getMeterName(), 0L);
 
-                ProcessDefinition processDefinition = getProcessDefinition(incident.getProcessDefinitionId());
-
-
-                // Получаем имя топика внешней задачи, если это инцидент, связанный с внешней задачей
-                String topicName = Optional.ofNullable(getProcessEngine().getExternalTaskService()
-                                .createExternalTaskQuery()
-                                .executionId(incident.getExecutionId())
-                                .singleResult())
-                        .map(ExternalTask::getTopicName)
-                        .orElse(null);
-
-                Tags tags = IncidentMeterTags.createTags(processDefinition.getTenantId(),
-                        processDefinition.getId(),
-                        processDefinition.getKey(),
-                        incident.getActivityId(),
-                        incident.getFailedActivityId(),
-                        incident.getIncidentType());
-
-
-                if (topicName != null) {
-                    tags = tags.and("topic.name", topicName); // Добавляем тег для topicName
-                }
 
                 return new MultiGaugeData(gaugeValues, tags);
             });
