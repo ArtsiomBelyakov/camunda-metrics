@@ -2,14 +2,17 @@ package org.camunda.bpm.run.plugin.monitoring.task;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.run.plugin.monitoring.Meters;
 import org.camunda.bpm.run.plugin.monitoring.Monitor;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class TaskSnapshotMonitor extends Monitor {
 
@@ -19,8 +22,8 @@ public class TaskSnapshotMonitor extends Monitor {
 
     @Override
     protected List<String> getGaugeNames() {
-        return Arrays.asList(Meters.TASKS_OPEN, Meters.TASKS_OPEN_NEWEST, Meters.TASKS_OPEN_OLDEST).stream()
-                .map(Meters::getMeterName).collect(Collectors.toList());
+        return Stream.of(Meters.TASKS_OPEN, Meters.TASKS_OPEN_NEWEST, Meters.TASKS_OPEN_OLDEST)
+            .map(Meters::getMeterName).toList();
     }
 
     @Override
@@ -35,13 +38,13 @@ public class TaskSnapshotMonitor extends Monitor {
             if (task.getProcessInstanceId() != null) {
                 // Task is related to a process instance
                 ProcessDefinition processDefinition = getProcessDefinition(task.getProcessDefinitionId());
-                tags = TaskProcessInstanceMeterTags.createTags(task.getTenantId(), task.getProcessDefinitionId(),
-                        processDefinition.getKey(), task.getTaskDefinitionKey());
+                tags = TaskProcessInstanceMeterTags.createTags(task.getTenantId(),
+                    processDefinition.getKey(), task.getTaskDefinitionKey());
 
             } else if (task.getCaseInstanceId() != null) {
                 // Task is related to a case instance
                 tags = TaskCaseInstanceMeterTags.createTags(task.getTenantId(), task.getCaseDefinitionId(),
-                        task.getTaskDefinitionKey());
+                    task.getTaskDefinitionKey());
 
             } else {
                 // Task is stand-alone

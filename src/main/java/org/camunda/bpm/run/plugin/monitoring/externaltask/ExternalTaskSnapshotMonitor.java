@@ -2,13 +2,15 @@ package org.camunda.bpm.run.plugin.monitoring.externaltask;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.externaltask.ExternalTask;
 import org.camunda.bpm.run.plugin.monitoring.Meters;
 import org.camunda.bpm.run.plugin.monitoring.Monitor;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class ExternalTaskSnapshotMonitor extends Monitor {
 
@@ -19,20 +21,24 @@ public class ExternalTaskSnapshotMonitor extends Monitor {
     @Override
     protected List<String> getGaugeNames() {
         return Arrays.stream(Meters.values())
-                .filter(meter -> meter.name().startsWith("EXTERNAL_TASKS"))
-                .map(Meters::getMeterName)
-                .collect(Collectors.toList());
+            .filter(meter -> meter.name().startsWith("EXTERNAL_TASKS"))
+            .map(Meters::getMeterName)
+            .toList();
     }
 
     @Override
     protected Collection<MultiGaugeData> retrieveGaugesData() {
         Map<Tags, MultiGaugeData> map = new HashMap<>();
         List<ExternalTask> tasks = getProcessEngine().getExternalTaskService().createExternalTaskQuery()
-                .unlimitedList();
+            .unlimitedList();
 
         for (ExternalTask task : tasks) {
-            Tags tags = ExternalTaskMeterTags.createTags(task.getTenantId(), task.getProcessDefinitionId(),
-                    task.getProcessDefinitionKey(), task.getActivityId(), task.getTopicName());
+            Tags tags = ExternalTaskMeterTags.createTags(
+                task.getTenantId(),
+                task.getProcessDefinitionKey(),
+                task.getActivityId(),
+                task.getTopicName()
+            );
 
             MultiGaugeData data = map.computeIfAbsent(tags, key -> {
                 Map<String, Long> gaugeValues = new HashMap<>();
@@ -43,7 +49,8 @@ public class ExternalTaskSnapshotMonitor extends Monitor {
 
             data.getGaugesValues().merge(Meters.EXTERNAL_TASKS_OPEN.getMeterName(), 1L, Long::sum);
             if (task.getErrorMessage() != null) {
-                data.getGaugesValues().merge(Meters.EXTERNAL_TASKS_OPEN_ERROR.getMeterName(), 1L, Long::sum);
+                data.getGaugesValues()
+                    .merge(Meters.EXTERNAL_TASKS_OPEN_ERROR.getMeterName(), 1L, Long::sum);
             }
         }
 

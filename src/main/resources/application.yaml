@@ -1,4 +1,10 @@
 #for test locally
+server:
+  port: 8383
+
+slo-metrics:
+  enabled: true
+  service-name: camunda
 
 management:
   endpoints:
@@ -30,7 +36,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/process_engine
+    url: jdbc:postgresql://localhost:5433/process_engine
     username: postgres
     password: admin
 
