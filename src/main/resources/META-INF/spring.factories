@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  corp.platform.gitlab.observabilitybase.configuration.MetricsProperties,\
+  corp.platform.gitlab.observabilitybase.configuration.metrics.MetricsConfiguration

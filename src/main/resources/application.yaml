@@ -1,6 +1,6 @@
 #for test locally
 server:
-  port: 8383
+  port: 8483
 
 slo-metrics:
   enabled: true
@@ -10,9 +10,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: prometheus, metrics
+        include: prometheus, metrics, heapdump
   metrics:
     enable:
+      heapdump: true
       jvm: true
       hikaricp: true
       process: true
